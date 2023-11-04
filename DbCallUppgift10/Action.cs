@@ -198,13 +198,36 @@ namespace DbCallUppgift10
                 Console.WriteLine("==================================================================\n");
 
 
-                var shippedDates = context.Orders.Select(x => x.ShippedDate).ToList();
+               
+                var customer = context.Customers
+                    .Where(c => c.CompanyName == name)
+                    .FirstOrDefault();
 
-                int nullCount = shippedDates.Count(date => date == null);
-                int notNullCount = shippedDates.Count(date => date != null);
+                if (customer != null)
+                {
+                    var shippedOrderCount = context.Orders
+                        .Where(o => o.CustomerId == customer.CustomerId && o.ShippedDate != null)
+                        .Select(o => o.OrderId)
+                        .Count();
 
-                Console.WriteLine("Number of ORDERS NOT Shipped: " + nullCount);
-                Console.WriteLine("Number of ORDERS Shipped: " + notNullCount);
+                    Console.WriteLine($"Total orders shipped for {name}: {shippedOrderCount}");
+                }
+                if (customer != null)
+                {
+                    var shippedOrderCount = context.Orders
+                        .Where(o => o.CustomerId == customer.CustomerId && o.ShippedDate == null)
+                        .Select(o => o.OrderId)
+                        .Count();
+
+                    Console.WriteLine($"Total orders NOT shipped for {name}: {shippedOrderCount}");
+
+                }
+                else
+                {
+                    Console.WriteLine($"Customer with Company Name '{name}' not found.");
+                }
+
+            }
 
 
                 Console.WriteLine("==================================================================\n");
@@ -212,4 +235,3 @@ namespace DbCallUppgift10
             }
         }
     }
-}
